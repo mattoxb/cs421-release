@@ -1,0 +1,70 @@
+name:                interpreter
+version:             0.3.0.0
+license:             NCSA
+author:              "Nick Walker"
+maintainer:          "njw3@illinois.edu"
+copyright:           "2019 Nick Walker"
+
+extra-source-files:
+- README.md
+
+description:         Please see the README
+
+dependencies:
+- base >= 4.7 && < 5
+- unordered-containers >= 0.2
+- parsec
+
+library:
+  source-dirs: src
+
+executables:
+  interpreter:
+    main: Main.hs
+    source-dirs: app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - interpreter
+
+tests:
+  graded-test:
+    main:                GradedSpec.hs
+    source-dirs:
+    - test/graded
+    - test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - interpreter
+    - QuickCheck >= 2.9.0
+    - HUnit >= 1.5
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
+    - quickcheck-io
+    default-extensions:
+    - NamedFieldPuns
+
+  friendly-test:
+    main:                FriendlySpec.hs
+    source-dirs:
+    - test/friendly
+    - test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - interpreter
+    - QuickCheck >= 2.9.0
+    - HUnit >= 1.5
+    - tasty
+    - tasty-hunit
+    - tasty-quickcheck
+    default-extensions:
+    - NamedFieldPuns
