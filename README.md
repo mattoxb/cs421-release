@@ -4,29 +4,16 @@ This repository contains the programming assignments (MPs) for CS421. Throughout
 
 ## Getting Started
 
-### 1. Fork This Repository
+### 1. Create Your Repository
 
-First, create your own copy of this repository by forking it on GitHub:
+You should have gotten instructions on how to create a repository on the illinos coursework github account.
+See https://cs421-sp26-web.pages.dev/Docs/Your-GitHub-Repository to accomplish this.
 
-1. Click the **Fork** button in the top-right corner of this repository
-2. This creates a copy under your GitHub account where you can commit your work
+### 2. Add this Repository as Upstream
 
-### 2. Clone Your Fork
+cd into your new repository and do this:
 
-Clone your forked repository to your local machine:
-
-```bash
-git clone https://github.com/YOUR-USERNAME/cs421-release.git
-cd cs421-release
 ```
-
-You may want to rename this directory.  We'll assume for these docs that you keep the name as-is.
-
-### 3. Set Up the Upstream Remote
-
-To receive new assignments and updates from the course repository, add it as an upstream remote:
-
-```bash
 git remote add upstream https://github.com/mattoxb/cs421-release.git
 ```
 

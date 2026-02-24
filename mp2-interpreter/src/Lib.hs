@@ -88,10 +88,12 @@ liftIntOp op (IntVal x) (IntVal y) = IntVal $ op x y
 liftIntOp _ _ _ = ExnVal "Cannot lift"
 
 liftBoolOp :: (Bool -> Bool -> Bool) -> Val -> Val -> Val
-liftBoolOp = undefined
+liftBoolOp op (BoolVal x) (BoolVal y) = BoolVal $ op x y
+liftBoolOp _ _ _ = ExnVal "Cannot lift"
 
 liftCompOp :: (Int -> Int -> Bool) -> Val -> Val -> Val
-liftCompOp = undefined
+liftCompOp op (IntVal x) (IntVal y) = BoolVal $ op x y
+liftCompOp _ _ _ = ExnVal "Cannot lift"
 
 --- Eval
 --- ----
@@ -100,36 +102,52 @@ eval :: Exp -> Env -> Val
 
 --- ### Constants
 
-eval (IntExp i)  _ = undefined
-eval (BoolExp i) _ = undefined
+eval (IntExp i)  _ = IntVal i
+eval (BoolExp i) _ = BoolVal i
 
 --- ### Variables
 
-eval (VarExp s) env = undefined
+eval (VarExp s) env = case H.lookup s env of
+    Just val -> val
+    Nothing -> ExnVal "No match in env"
 
 --- ### Arithmetic
 
-eval (IntOpExp op e1 e2) env = undefined
+eval (IntOpExp op e1 e2) env = case H.lookup op intOps of
+    Just f -> case (op, eval e2 env) of
+        ("/", IntVal 0) -> ExnVal "Division by 0"
+        _ -> liftIntOp f (eval e1 env) (eval e2 env)
+    Nothing -> ExnVal "Cannot lift"
 
 --- ### Boolean and Comparison Operators
 
-eval (BoolOpExp op e1 e2) env = undefined
+eval (BoolOpExp op e1 e2) env = case H.lookup op boolOps of
+    Just f -> liftBoolOp f (eval e1 env) (eval e2 env)
+    Nothing -> ExnVal "Cannot lift"
 
-eval (CompOpExp op e1 e2) env = undefined
+eval (CompOpExp op e1 e2) env = case H.lookup op compOps of
+    Just f -> liftCompOp f (eval e1 env) (eval e2 env)
+    Nothing -> ExnVal "Cannot lift"
 
 --- ### If Expressions
 
-eval (IfExp e1 e2 e3) env = undefined
+eval (IfExp e1 e2 e3) env = case eval e1 env of
+    BoolVal True -> eval e2 env
+    BoolVal False -> eval e3 env
+    _ -> ExnVal "Condition is not a Bool"
+
 
 --- ### Functions and Function Application
 
-eval (FunExp params body) env = undefined
+eval (FunExp params body) env = CloVal params body env
 
-eval (AppExp e1 args) env = undefined
+eval (AppExp e1 args) env = case eval e1 env of
+    CloVal params body cloEnv -> (if length params == length args then eval body $ H.union (H.fromList $ zip params (map (`eval` env) args)) cloEnv else ExnVal "Apply to non-closure")
+    _ -> ExnVal "Apply to non-closure"
 
 --- ### Let Expressions
 
-eval (LetExp pairs body) env = undefined
+eval (LetExp pairs body) env = eval body (H.union (H.fromList (map (\(s,e) -> (s, eval e env)) pairs)) env)
 
 --- Statements
 --- ----------
@@ -143,7 +161,9 @@ exec (PrintStmt e) penv env = (val, penv, env)
 
 --- ### Set Statements
 
-exec (SetStmt var e) penv env = undefined
+exec (SetStmt var e) penv env = case eval e env of
+    ExnVal s -> (s, penv, env)
+    val -> (show val, penv, H.insert var val env)
 
 --- ### Sequencing
 
