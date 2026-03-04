@@ -1,0 +1,52 @@
+name: mp3-cps
+version: 0.1.0.0
+synopsis: Write a CPS Transform
+license: NCSA
+build-type: Simple
+cabal-version: ">=1.10"
+
+executables:
+  main:
+    main: Main.hs
+    source-dirs: 
+      - app
+      - src
+    other-modules:
+      - Lib
+      - Parse
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    default-language: Haskell2010
+    dependencies:
+      - base
+      - unordered-containers >= 0.2
+      - parsec
+
+tests:
+  test:
+    main: Spec.hs
+    type: exitcode-stdio-1.0
+    source-dirs:
+      - src
+      - test
+    other-modules:
+      - Lib
+      - Parse
+      - Spec
+      - Tests
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+      - -main-is
+      - Spec.main
+    default-language: Haskell2010
+    dependencies:
+      - base
+      - unordered-containers >= 0.2
+      - parsec
+      - test-framework
+      - test-framework-quickcheck2
+      - QuickCheck
