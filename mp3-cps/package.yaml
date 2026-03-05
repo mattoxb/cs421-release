@@ -34,7 +34,7 @@ tests:
     other-modules:
       - Lib
       - Parse
-      - Spec
+      # - Spec
       - Tests
     ghc-options:
       - -threaded
