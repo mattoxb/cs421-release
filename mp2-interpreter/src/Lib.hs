@@ -161,20 +161,35 @@ exec (PrintStmt e) penv env = (val, penv, env)
 
 --- ### Set Statements
 
-exec (SetStmt var e) penv env = case eval e env of
-    ExnVal s -> (s, penv, env)
-    val -> (show val, penv, H.insert var val env)
+exec (SetStmt var e) penv env = ("", penv, H.insert var (eval e env) env)
 
 --- ### Sequencing
 
-exec (SeqStmt []) penv env = undefined
+exec (SeqStmt []) penv env = ("", penv, env)
+exec (SeqStmt (s:ss)) penv env =
+    let (out1, penv1, env1) = exec s penv env
+        (out2, penv2, env2) = exec (SeqStmt ss) penv1 env1
+    in (out1 ++ out2, penv2, env2)
 
 --- ### If Statements
 
-exec (IfStmt e1 s1 s2) penv env = undefined
+exec (IfStmt e1 s1 s2) penv env =
+    case eval e1 env of
+        BoolVal True  -> exec s1 penv env
+        BoolVal False -> exec s2 penv env
+        _ -> ("exn: Condition is not a Bool", penv, env)
 
 --- ### Procedure and Call Statements
 
-exec p@(ProcedureStmt name args body) penv env = undefined
+exec (ProcedureStmt name args body) penv env =
+    ("", H.insert name (ProcedureStmt name args body) penv, env)
 
-exec (CallStmt name args) penv env = undefined
+exec (CallStmt name args) penv env =
+    case H.lookup name penv of
+        Nothing -> ("Procedure " ++ name ++ " undefined", penv, env)
+        Just (ProcedureStmt _ params body) ->
+            let argVals = map (`eval` env) args
+                newEnv  = H.union (H.fromList (zip params argVals)) env
+                (out, penv1, env1) = exec body penv newEnv
+            in (out, penv1, env1)
+        _ -> ("Procedure " ++ name ++ " undefined", penv, env)
