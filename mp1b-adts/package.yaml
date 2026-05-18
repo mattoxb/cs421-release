@@ -1,0 +1,32 @@
+name:                adt
+version:             0.1.0.0
+license:             NCSA
+author:              "Nick Walker"
+maintainer:          "njw3@illinois.edu"
+copyright:           "2019 Nick Walker"
+
+extra-source-files:
+- README.md
+
+description:         Please see the README
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+
+tests:
+  adt-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - adt
+    - test-framework
+    - test-framework-quickcheck2
+    - QuickCheck
+    
