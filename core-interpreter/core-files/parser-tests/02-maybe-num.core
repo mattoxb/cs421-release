@@ -1,0 +1,2 @@
+maybe ::= Just num | None ;
+main = 4

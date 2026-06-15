@@ -1,0 +1,2 @@
+colour ::= Red | Green | Blue ;
+main = 2
