@@ -1,0 +1,42 @@
+name:                mp6-type-infer
+version:             0.2.0.0
+synopsis:            Write PicoML's Type Inferencer
+license:             NCSA
+
+description:         Please see the README
+
+dependencies:
+- base >= 4.7 && < 5
+- containers
+
+library:
+  source-dirs: src
+  build-tools: happy
+  dependencies:
+  - array # the parser needs this
+  - mtl
+
+executables:
+  infer:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mp6-type-infer
+
+tests:
+  test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - mp6-type-infer
+    #- QuickCheck
+    - tasty
+    - tasty-hunit
